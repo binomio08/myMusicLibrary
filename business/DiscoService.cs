@@ -13,39 +13,35 @@ namespace business
         public List<Disco> discoList()
         {
             List<Disco> discoList = new List<Disco>();
-            SqlConnection conn = new SqlConnection();
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+            DataAccess data = new DataAccess();
 
             try
             {
-                conn.ConnectionString = "server=.\\SQLEXPRESS; database=DISCOS_DB; integrated security=true";
-                cmd.CommandType = System.Data.CommandType.Text;
-                cmd.CommandText = "SELECT Id, Titulo, FechaLanzamiento, CantidadCanciones, UrlImagenTapa FROM DISCOS";
-                cmd.Connection = conn;  
+                data.setQuery("SELECT Id, Titulo, FechaLanzamiento, CantidadCanciones, UrlImagenTapa FROM DISCOS");
+                data.execRead();
 
-                conn.Open();
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                while (data.Reader.Read())
                 {
                     Disco aux = new Disco();
-                    aux.Id = (int)reader["Id"];
-                    aux.Title = (string)reader["Titulo"];
-                    aux.LaunchDate = (DateTime)reader["FechaLanzamiento"];
-                    aux.NumberTrack = (int)reader["CantidadCanciones"];
-                    aux.UrlImage = (string)reader["UrlImagenTapa"];
+                    aux.Id = (int)data.Reader["Id"];
+                    aux.Title = (string)data.Reader["Titulo"];
+                    aux.LaunchDate = (DateTime)data.Reader["FechaLanzamiento"];
+                    aux.NumberTrack = (int)data.Reader["CantidadCanciones"];
+                    aux.UrlImage = (string)data.Reader["UrlImagenTapa"];
 
                     discoList.Add(aux);
                 }
 
-                conn.Close();
                 return discoList;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw ex;
+            }
+            finally
+            {
+                data.closeConn();
             }
         }            
     }
